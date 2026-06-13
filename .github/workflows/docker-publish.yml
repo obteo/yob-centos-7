@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE_NAME: php56-web
+  IMAGE_NAME: php54-web
 
 jobs:
   build:
