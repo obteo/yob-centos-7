@@ -1,15 +1,25 @@
 #!/bin/bash
+cd /home/container
 
-# pulizia runtime
-rm -rf /run/httpd/*
+# Output PHP version (debug utile)
+php -v
 
-# assicurati directory container
-mkdir -p /home/container/public_html
-chown -R apache:apache /home/container
+# ----------------------------------
+# Replace Startup Variables (Pterodactyl standard)
+# ----------------------------------
+MODIFIED_STARTUP=$(eval echo "$(echo ${STARTUP} | sed -e 's/{{/${/g' -e 's/}}/}/g')")
 
-# usa /tmp invece di /run (CRITICO)
+echo ":/home/container$ ${MODIFIED_STARTUP}"
+
+# ----------------------------------
+# Fix runtime dirs (NO permissions required hacks)
+# ----------------------------------
+mkdir -p /tmp/apache
+
 export APACHE_RUN_DIR=/tmp
-export PIDFILE=/tmp/httpd.pid
+export TMPDIR=/tmp
 
-# avvio apache con config sicura
-exec httpd -DFOREGROUND -c "PidFile /tmp/httpd.pid"
+# ----------------------------------
+# Run the Server
+# ----------------------------------
+exec ${MODIFIED_STARTUP}
